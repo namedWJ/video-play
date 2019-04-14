@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>视频播放</title>
+    <style lang="less">
+        @b: 46.875rem;
+        .pro-video {
+            width: 100%;
+            height: 100%;
+        }
+        .play-icon {
+            position: absolute;
+            z-index: 8;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 128/@b;
+            height: 128/@b;
+        }
+        .control {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 9;
+            width: 100%;
+            height: 96/@b;
+            background-color: rgba(0,0,0,.08);
+            .show-time {
+                padding: 0 24/@b;
+                font-size: 28/@b;
+                color: #FFF;
+            }
+            .process {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 360/@b;
+                height: 100%;
+                .range {
+                    width: 100%;
+                    height: 4/@b;
+                    border-radius: 2/@b;
+                }
+            }
+            .dl-img {
+                margin-right: 32/@b;
+                width: 44/@b;
+                height: 44/@b;
+            }
+            .zoom-in, .zoom-out {
+                width: 44/@b;
+                height: 44/@b;
+            }
+        }
+        .voice {
+            position: absolute;
+            z-index: 8;
+            right: 18/@b;
+            bottom: 114/@b;
+            width: 57/@b;
+            height: 57/@b;
+        }
+    </style>
+</head>
+<body>
+    <li class="li1 video-show J_video-show">
+        <img class="play-icon J_play-icon" src="//h0.hucdn.com/open201915/b1b8adfbf827515d_128x128.png" alt="poster">
+        <video class="pro-video J_pro-video" src="//v2.hucdn.com//upload/pvideo/1904/10/15548880985354_960x720.mp4" alt="video" poster="{{main_img}}" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow" x5-video-player-type="h5" x5-video-player-fullscreen="true" x5-video-orientation="landscape|portrait"></video>
+        <div class="control">
+            <span class="show-time J_start-time">00:00</span>
+            <div class="process">
+                <input class="range J_range" type="range" value="0" max="10" min="0" step="1"/>
+            </div>
+            <span class="show-time J_end-time">00:00</span>
+            <img class="dl-img J_dl-img" alt="dl" src="//h0.hucdn.com/open201915/249ab0acf580441b_44x44.png">
+            <img src="//h0.hucdn.com/open201915/d91fe3d874cf96bc_44x44.png" alt="zoom in" class="zoom-in J_zoom-in">
+            <!-- <img src="//h0.hucdn.com/open201915/eae511ab23845ac3_44x44.png" alt="zoom out" class="zoom-out J_zoom-out"> -->
+        </div>
+        <img src="//h0.hucdn.com/open201915/c53aefc192bc2df2_57x57.png" alt="voice" class="voice J_voice">
+    </li>
+</body>
+<script>
+import screenfull from 'screenfull';
+
+// 视频播放相关API
+$('body').on('click', '.J_play-icon', () => {
+    let $video = $('.J_pro-video')[0];
+    let isPaused = $video.paused;
+    isPaused && $video.play();
+    !isPaused && $video.pause();
+});
+$('body').on('click', '.J_voice', (e) => {
+    let $video = $('.J_pro-video')[0];
+    if ($video.muted) {
+        $video.muted = false;
+        $('.J_voice').attr('src', '//h0.hucdn.com/open201915/c53aefc192bc2df2_57x57.png');
+    } else {
+        $video.muted = true;
+        $('.J_voice').attr('src', '//h0.hucdn.com/open201915/1f1701002064f7d7_57x57.png');
+    }
+});
+$('body').on('click', '.J_dl-img', () => {
+    // 调用客户端的hybrid方法
+});
+$('body').on('click', '.J_zoom-in', () => {
+    if (screenfull.enabled) {
+        screenfull.request($('.J_video-show')[0]);
+    } else {
+        // Ignore or do something else
+    }
+});
+$('body').on('click', '.J_zoom-out', () => {
+
+});
+setTimeout(() => {
+    $('.J_end-time').text(parseVideoTime($('.J_pro-video')[0].duration));
+}, 1000);
+
+// 处理视频时长
+let parseVideoTime = (time) => {
+    let backTime = '00:00';
+    if (!time) {
+        return backTime;
+    }
+    let seconds = time % 60;
+    let min = parseInt(time / 60);
+    return `${parseNums(min)}:${parseNums(seconds)}`;
+}
+let parseNums = (num) => (num < 10 ? `0${num}` : num);
+</script>
+</html>
